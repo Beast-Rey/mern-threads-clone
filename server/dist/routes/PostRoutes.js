@@ -7,9 +7,9 @@ const ProtectedRoute_1 = __importDefault(require("../middleware/ProtectedRoute")
 const PostController_1 = require("../controller/PostController");
 const express_1 = require("express");
 const router = (0, express_1.Router)();
+router.get("/feed", ProtectedRoute_1.default, PostController_1.GetFeedPosts);
 router.get('/user/:username', PostController_1.GetUserPosts);
 router.post('/create', ProtectedRoute_1.default, PostController_1.CreatePost);
-router.get("/feed", ProtectedRoute_1.default, PostController_1.GetFeedPosts);
 router.delete("/delete/:id", ProtectedRoute_1.default, PostController_1.DeletePost);
 router.put("/like/:id", ProtectedRoute_1.default, PostController_1.LikeUnlikePost);
 router.put("/reply/:id", ProtectedRoute_1.default, PostController_1.ReplyToPost);
