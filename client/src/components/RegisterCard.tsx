@@ -34,12 +34,14 @@ export default function SignupCard() {
   const setUser = useSetRecoilState(UserAtom);
   const setAuth = useSetRecoilState(AuthAtom);
   const showToast = UseShowToast();
+  const [loading, setLoading] = useState<boolean>(false)
 
   const { register, handleSubmit, formState } = useForm<inputType>({
     resolver: zodResolver(RegisterSchema),
   });
 
   const onSubmit: SubmitHandler<inputType> = async (inputs: inputType) => {
+    setLoading(true)
     try {
       const response = await fetch("/api/user/register", {
         method: "POST",
@@ -61,6 +63,8 @@ export default function SignupCard() {
       setUser(data.data);
     } catch (error) {
       showToast("Error", error, "error");
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -135,6 +139,7 @@ export default function SignupCard() {
                   bg: useColorModeValue("gray.700", "gray.800"),
                 }}
                 type="submit"
+                isLoading={loading}
               >
                 Register
               </Button>

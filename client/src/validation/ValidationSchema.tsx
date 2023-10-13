@@ -26,3 +26,12 @@ export const RegisterSchema = z.object({
     })
     .min(5, { message: "Must be 5 or more characters long" }),
 });
+
+export const LoginSchema = z.object({
+  username: z.string({
+    required_error: 'username is required',
+  }),
+  password: z.string({
+    required_error: 'Password is required',
+  }),
+});
