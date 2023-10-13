@@ -47,6 +47,8 @@ exports.RegisterUser = (0, AsyncWrapper_1.default)((req, res, _next) => __awaite
         password: pass,
     });
     yield newUser.save();
+    const accessToken = (0, genCookieAndToken_1.generateToken)(newUser._id, { expiresIn: "1h" });
+    (0, genCookieAndToken_1.generateCookie)(accessToken, res);
     if (newUser) {
         const _a = newUser._doc, { password } = _a, user = __rest(_a, ["password"]);
         return res

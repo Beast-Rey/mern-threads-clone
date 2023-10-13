@@ -51,7 +51,6 @@ export default function SignupCard() {
         body: JSON.stringify(inputs),
       });
       const data = await response.json();
-      console.log(data)
       if (data?.error === "ValidationError") {
         showToast("Error", "Failed to Register try again later!!", "error");
         return;

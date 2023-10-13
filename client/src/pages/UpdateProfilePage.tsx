@@ -74,7 +74,7 @@ export default function UpdateProfilePage() {
         <FormControl id="userName">
           <Stack direction={['column', 'row']} spacing={6}>
             <Center>
-              <Avatar size="xl" src={imageUrl || "https://bit.ly/sage-adebayo"} />
+              <Avatar size="xl" src={imageUrl || user.profilePic} />
             </Center>
             <Center w="full">
               <Button w="full" onClick={() => fileRef?.current.click()}>Change Avatar</Button>

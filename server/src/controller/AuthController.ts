@@ -30,6 +30,8 @@ export const RegisterUser = AsyncWrapper(
       password: pass,
     });
     await newUser.save();
+    const accessToken = generateToken(newUser._id, { expiresIn: "1h" });
+    generateCookie(accessToken, res);
     if (newUser) {
       const { password, ...user } = newUser._doc;
       return res
