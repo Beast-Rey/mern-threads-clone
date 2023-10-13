@@ -67,7 +67,7 @@ exports.LoginUser = (0, AsyncWrapper_1.default)((req, res, _next) => __awaiter(v
     const findUser = (yield UserModel_1.default.findOne({ username }));
     if (!findUser) {
         throw new AppError_1.default({
-            message: "User not found!!",
+            message: "Login failed. Invalid Username or Password.",
             statusCode: 400,
         });
     }
@@ -77,10 +77,10 @@ exports.LoginUser = (0, AsyncWrapper_1.default)((req, res, _next) => __awaiter(v
     const _b = findUser._doc, { password } = _b, user = __rest(_b, ["password"]);
     res
         .status(200)
-        .json({ message: `${user.name} Successfully logged In!!`, data: user });
+        .json({ message: `${user.name} logged In`, data: user });
 }));
 //logout user
 exports.LogoutUser = (0, AsyncWrapper_1.default)((_req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     res.cookie("jwt", "", { maxAge: 1 });
-    res.status(200).json({ message: "You have been logged out successfully" });
+    res.status(200).json({ message: "You have been logged out successfully." });
 }));

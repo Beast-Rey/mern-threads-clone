@@ -6,7 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const AppError_1 = __importDefault(require("../utils/AppError"));
 const ErrorHandling = (error, _req, res, _next) => {
     if (error instanceof AppError_1.default) {
-        return res.status(error.statusCode).json({ error: error.message });
+        return res.status(error.statusCode).json({ error: error === null || error === void 0 ? void 0 : error.message });
+    }
+    if (error.name === 'ValidationError') {
+        return res.status(500).json({ error: error.name });
     }
     return res.status(500).json(error.message);
 };

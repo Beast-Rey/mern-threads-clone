@@ -1,13 +1,14 @@
 import mongoose, { MongooseError } from "mongoose";
+import logger from '../logger/logger'
 
 function MongoConnection() {
   mongoose
     .connect(process.env.MONGO_DB_URL!)
     .then((success) => {
-      console.log(`[Mongo DB]: ${success.connection.host}`);
+      logger.info(`[Mongo DB]: ${success.connection.host}`);
     })
     .catch((error: typeof MongooseError) => {
-      console.log(`[Mongo DB]: ${error.messages}`);
+      logger.error(`[Mongo DB]: ${error.messages}`);
     });
 }
 

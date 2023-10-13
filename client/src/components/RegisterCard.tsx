@@ -20,19 +20,26 @@ import { useSetRecoilState } from "recoil";
 import AuthAtom from "../Atom/AuthAtom";
 import UserAtom from "../Atom/UserAtom";
 import UseShowToast from "../Hooks/UseShowToast";
+import { z } from "zod";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ErrorMessage } from "@hookform/error-message"
+import { RegisterSchema } from "../validation/ValidationSchema";
+
+
+type inputType = z.infer<typeof RegisterSchema>;
 
 export default function SignupCard() {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const setUser = useSetRecoilState(UserAtom);
   const setAuth = useSetRecoilState(AuthAtom);
   const showToast = UseShowToast();
-  const [inputs, setInputs] = useState({
-    name: "",
-    email: "",
-    password: "",
-    username: "",
+
+  const { register, handleSubmit, formState } = useForm<inputType>({
+    resolver: zodResolver(RegisterSchema),
   });
-  const handleSubmit = async () => {
+
+  const onSubmit: SubmitHandler<inputType> = async (inputs: inputType) => {
     try {
       const response = await fetch("/api/user/register", {
         method: "POST",
@@ -42,9 +49,13 @@ export default function SignupCard() {
         body: JSON.stringify(inputs),
       });
       const data = await response.json();
-      if (data?.error) {
-        showToast("Error", data?.error, "error");
+      console.log(data)
+      if (data?.error === "ValidationError") {
+        showToast("Error", "Failed to Register try again later!!", "error");
         return;
+      }
+      if (data.message === "Your Account has been created.") {
+        showToast("Success", data?.message, "success");
       }
       localStorage.setItem("threads", JSON.stringify(data.data));
       setUser(data.data);
@@ -68,66 +79,53 @@ export default function SignupCard() {
           p={8}
           w={{ base: "full", sm: "400px" }}
         >
-          <Stack spacing={4}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <HStack>
               <Box>
                 <FormControl isRequired>
                   <FormLabel>Full Name</FormLabel>
-                  <Input
-                    type="text"
-                    value={inputs.name}
-                    onChange={(e) =>
-                      setInputs({ ...inputs, name: e.target.value })
-                    }
-                  />
+                  <Input type="text" {...register("name")} />
+                  <Text color={"red.400"}><ErrorMessage errors={formState.errors} name="name"/></Text>
                 </FormControl>
               </Box>
               <Box>
                 <FormControl isRequired>
                   <FormLabel>User Name</FormLabel>
-                  <Input
-                    type="text"
-                    value={inputs.username}
-                    onChange={(e) =>
-                      setInputs({ ...inputs, username: e.target.value })
-                    }
-                  />
+                  <Input type="text" {...register("username")} />
+                  <Text color={"red.400"}><ErrorMessage errors={formState.errors} name="username"/></Text>
                 </FormControl>
               </Box>
             </HStack>
-            <FormControl isRequired>
-              <FormLabel>Email address</FormLabel>
-              <Input
-                type="email"
-                value={inputs.email}
-                onChange={(e) =>
-                  setInputs({ ...inputs, email: e.target.value })
-                }
-              />
-            </FormControl>
-            <FormControl isRequired>
-              <FormLabel>Password</FormLabel>
-              <InputGroup>
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  value={inputs.password}
-                  onChange={(e) =>
-                    setInputs({ ...inputs, password: e.target.value })
-                  }
-                />
-                <InputRightElement h={"full"}>
-                  <Button
-                    variant={"ghost"}
-                    onClick={() =>
-                      setShowPassword((showPassword) => !showPassword)
-                    }
-                  >
-                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-            </FormControl>
-            <Stack spacing={10} pt={2}>
+            <Stack spacing={4} mt={4}>
+              <FormControl isRequired>
+                <FormLabel>Email address</FormLabel>
+                <Input type="email" {...register("email")} />
+                <Text color={"red.400"}><ErrorMessage errors={formState.errors} name="email"/></Text>
+              </FormControl>
+              <FormControl isRequired>
+                <FormLabel>Password</FormLabel>
+                <InputGroup>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    {...register("password")}
+                  />
+                  <InputRightElement h={"full"}>
+                    <Button
+                      aria-label="show"
+                      variant={"ghost"}
+                      onClick={() =>
+                        setShowPassword((showPassword) => !showPassword)
+                      }
+                    >
+                      {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                    </Button>
+                    
+                  </InputRightElement>
+                </InputGroup>
+                <Text color={"red.400"}><ErrorMessage errors={formState.errors} name="password" /></Text>
+              </FormControl>
+            </Stack>
+            <Stack spacing={10} pt={4}>
               <Button
                 loadingText="Submitting"
                 size="lg"
@@ -136,19 +134,19 @@ export default function SignupCard() {
                 _hover={{
                   bg: useColorModeValue("gray.700", "gray.800"),
                 }}
-                onClick={handleSubmit}
+                type="submit"
               >
-               Register
+                Register
               </Button>
             </Stack>
-            <Stack pt={6}>
-              <Text align={"center"}>
-                Already a user?{" "}
-                <Link color={"blue.400"} onClick={() => setAuth("login")}>
-                  Login
-                </Link>
-              </Text>
-            </Stack>
+          </form>
+          <Stack pt={6}>
+            <Text align={"center"}>
+              Already a user?{" "}
+              <Link color={"blue.400"} onClick={() => setAuth("login")}>
+                Login
+              </Link>
+            </Text>
           </Stack>
         </Box>
       </Stack>
