@@ -1,17 +1,18 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Loginschema = exports.Registerschema = void 0;
-const joi_1 = __importDefault(require("joi"));
-exports.Registerschema = joi_1.default.object({
-    name: joi_1.default.string().min(3).max(30).required(),
-    username: joi_1.default.string().min(3).max(30).required(),
-    password: joi_1.default.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
-    email: joi_1.default.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
+const zod_1 = require("zod");
+exports.Registerschema = zod_1.z.object({
+    body: zod_1.z.object({
+        name: zod_1.z.string().min(3).max(30),
+        username: zod_1.z.string().min(3).max(30),
+        password: zod_1.z.string(),
+        email: zod_1.z.string().email(),
+    }),
 });
-exports.Loginschema = joi_1.default.object({
-    username: joi_1.default.string().min(3).max(30).required(),
-    password: joi_1.default.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
+exports.Loginschema = zod_1.z.object({
+    body: zod_1.z.object({
+        username: zod_1.z.string().min(3).max(30),
+        password: zod_1.z.string(),
+    }),
 });

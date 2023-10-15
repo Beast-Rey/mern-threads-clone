@@ -16,7 +16,7 @@ export default function Header() {
   const setAuth = useSetRecoilState(AuthAtom)
   const user = useRecoilValue(UserAtom)
 
-  const logout = () => {}
+  
   const handleLogout = UseLogout()
   return (
     <Flex justifyContent={"space-between"} mt={6} mb={12}>
@@ -56,7 +56,7 @@ export default function Header() {
 
 			{!user && (
 				<Link as={RouterLink} to={"/auth"} onClick={() => setAuth("register")}>
-					Sign up
+					Register
 				</Link>
 			)}
     </Flex>

@@ -1,14 +1,17 @@
-import Joi from "joi";
+import { z } from "zod";
 
-export const Registerschema = Joi.object({
-  name: Joi.string().min(3).max(30).required(),
-  username: Joi.string().min(3).max(30).required(),
-  password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
-  email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
+export const Registerschema = z.object({
+  body: z.object({
+    name: z.string().min(3).max(30),
+    username: z.string().min(3).max(30),
+    password: z.string(),
+    email: z.string().email(),
+  }),
+});
 
-})
-
-export const Loginschema = Joi.object({
-  username: Joi.string().min(3).max(30).required(),
-  password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
-})
+export const Loginschema = z.object({
+  body: z.object({
+    username: z.string().min(3).max(30),
+    password: z.string(),
+  }),
+});

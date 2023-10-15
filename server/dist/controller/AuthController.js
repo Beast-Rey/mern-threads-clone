@@ -28,11 +28,9 @@ const UserModel_1 = __importDefault(require("../models/UserModel"));
 const genCookieAndToken_1 = require("../helper/genCookieAndToken");
 const AppError_1 = __importDefault(require("../utils/AppError"));
 const AsyncWrapper_1 = __importDefault(require("../utils/AsyncWrapper"));
-const ValidationSchema_1 = require("../validation/ValidationSchema");
 //register user
 exports.RegisterUser = (0, AsyncWrapper_1.default)((req, res, _next) => __awaiter(void 0, void 0, void 0, function* () {
-    ValidationSchema_1.Registerschema.validate({});
-    const { username, name, email, password: pass, } = req.body;
+    const { username, name, email, password: pass } = req.body;
     const findUser = yield UserModel_1.default.findOne({ email });
     if (findUser) {
         throw new AppError_1.default({
@@ -64,7 +62,6 @@ exports.RegisterUser = (0, AsyncWrapper_1.default)((req, res, _next) => __awaite
 }));
 //login user
 exports.LoginUser = (0, AsyncWrapper_1.default)((req, res, _next) => __awaiter(void 0, void 0, void 0, function* () {
-    ValidationSchema_1.Loginschema.validate({});
     const { username, password: pass } = req.body;
     const findUser = (yield UserModel_1.default.findOne({ username }));
     if (!findUser) {
@@ -77,9 +74,7 @@ exports.LoginUser = (0, AsyncWrapper_1.default)((req, res, _next) => __awaiter(v
     const accessToken = (0, genCookieAndToken_1.generateToken)(findUser._id, { expiresIn: "1h" });
     (0, genCookieAndToken_1.generateCookie)(accessToken, res);
     const _b = findUser._doc, { password } = _b, user = __rest(_b, ["password"]);
-    res
-        .status(200)
-        .json({ message: `${user.name} logged In`, data: user });
+    res.status(200).json({ message: `${user.name} logged In`, data: user });
 }));
 //logout user
 exports.LogoutUser = (0, AsyncWrapper_1.default)((_req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

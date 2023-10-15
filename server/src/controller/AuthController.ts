@@ -1,21 +1,23 @@
 import { NextFunction, Request, Response } from "express";
-import { LoginBodyType, RegisterBodyType } from "../types/types";
+import {
+  MessageResponse,
+  LoginReqType,
+  LoginResBody,
+  RegisterReqType,
+} from "../types/types";
 import UserModel from "../models/UserModel";
 import { generateCookie, generateToken } from "../helper/genCookieAndToken";
 import AppError from "../utils/AppError";
 import AsyncWrapper from "../utils/AsyncWrapper";
-import { Registerschema, Loginschema } from "../validation/ValidationSchema";
 
 //register user
 export const RegisterUser = AsyncWrapper(
-  async (req: Request, res: Response, _next: NextFunction) => {
-    Registerschema.validate({});
-    const {
-      username,
-      name,
-      email,
-      password: pass,
-    }: RegisterBodyType = req.body;
+  async (
+    req: Request<{}, MessageResponse | LoginResBody, RegisterReqType>,
+    res: Response<MessageResponse | LoginResBody>,
+    _next: NextFunction
+  ) => {
+    const { username, name, email, password: pass } = req.body;
     const findUser = await UserModel.findOne({ email });
     if (findUser) {
       throw new AppError({
@@ -48,9 +50,12 @@ export const RegisterUser = AsyncWrapper(
 
 //login user
 export const LoginUser = AsyncWrapper(
-  async (req: Request, res: Response, _next: NextFunction) => {
-    Loginschema.validate({});
-    const { username, password: pass }: LoginBodyType = req.body;
+  async (
+    req: Request<{}, MessageResponse | LoginResBody, LoginReqType>,
+    res: Response<MessageResponse | LoginResBody>,
+    _next: NextFunction
+  ) => {
+    const { username, password: pass } = req.body;
     const findUser = (await UserModel.findOne({ username })) as any;
     if (!findUser) {
       throw new AppError({
@@ -62,14 +67,18 @@ export const LoginUser = AsyncWrapper(
     const accessToken = generateToken(findUser._id, { expiresIn: "1h" });
     generateCookie(accessToken, res);
     const { password, ...user } = findUser._doc;
-    res
-      .status(200)
-      .json({ message: `${user.name} logged In`, data: user });
+    res.status(200).json({ message: `${user.name} logged In`, data: user });
   }
 );
 
 //logout user
-export const LogoutUser = AsyncWrapper(async (_req: Request, res: Response, next: NextFunction) => {
-  res.cookie("jwt", "", { maxAge: 1 });
-  res.status(200).json({ message: "You have been logged out successfully." });
-});
+export const LogoutUser = AsyncWrapper(
+  async (
+    _req: Request<{}, {}, MessageResponse>,
+    res: Response<MessageResponse>,
+    next: NextFunction
+  ) => {
+    res.cookie("jwt", "", { maxAge: 1 });
+    res.status(200).json({ message: "You have been logged out successfully." });
+  }
+);

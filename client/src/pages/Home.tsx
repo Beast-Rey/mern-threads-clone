@@ -8,7 +8,7 @@ import PostAtom from "../Atom/PostAtom";
 export default function Home() {
   const [posts, setposts] = useRecoilState<any>(PostAtom);
   const showToast = UseShowToast();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     const getFeedPosts = async () => {
       setLoading(true);
@@ -20,7 +20,6 @@ export default function Home() {
           showToast("Error", data.error, "error");
           return;
         }
-        console.log(data);
         setposts(data);
       } catch (error: any) {
         showToast("Error", error.message, "error");
